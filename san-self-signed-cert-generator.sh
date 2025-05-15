@@ -111,24 +111,24 @@ sudo chmod 640 "$CERTS_DIR/truststore.p12"
 
 
 # # step 9: keystore update.
-echo -e "Now You can Remove and Add the existing xpack keystore, truststore password from elasticsearch keystore to apply the new certificate."
-echo -e "# # Remove existing SSL-related secure passwords\n
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.keystore.secure_password\n
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.truststore.secure_password\n
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.keystore.secure_password\n
+echo -e "\n\nNow You can Remove and Add the existing xpack keystore, truststore password from elasticsearch keystore to apply the new certificate."
+echo -e "\n# # Remove existing SSL-related secure passwords
+sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.keystore.secure_password
+sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.truststore.secure_password
+sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.keystore.secure_password
 sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.truststore.secure_password"
 
-echo -e "# # Add new secure passwords interactively
-echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.keystore.secure_password\n
-echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.truststore.secure_password\n
-echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.keystore.secure_password\n
+echo -e "\n# # Add new secure passwords interactively
+echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.keystore.secure_password
+echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.truststore.secure_password
+echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.keystore.secure_password
 echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.truststore.secure_password"
 
-echo -e "# Verify keystore passwords (use cautiously in production)
-/usr/share/elasticsearch/bin/elasticsearch-keystore show autoconfiguration.password_hash\n
-/usr/share/elasticsearch/bin/elasticsearch-keystore show keystore.seed\n
-/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.http.ssl.keystore.secure_password\n
-/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.http.ssl.truststore.secure_password\n
-/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.transport.ssl.keystore.secure_password\n
+echo -e "\n# Verify keystore passwords (use cautiously in production)
+/usr/share/elasticsearch/bin/elasticsearch-keystore show autoconfiguration.password_hash
+/usr/share/elasticsearch/bin/elasticsearch-keystore show keystore.seed
+/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.http.ssl.keystore.secure_password
+/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.http.ssl.truststore.secure_password
+/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.transport.ssl.keystore.secure_password
 /usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.transport.ssl.truststore.secure_password"
 echo "✅ All done. Certificates and Truststore are ready in: $CERTS_DIR"
