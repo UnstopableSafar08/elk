@@ -11,7 +11,7 @@
 set -e
 
 # Ask for domain name
-read -p "Enter your base domain (e.g. sagar.com.np): " USER_DOMAIN
+read -p "Enter your base domain (e.g. sagar.com.np or sagar.com): " USER_DOMAIN
 WILDCARD="*.$USER_DOMAIN"
 echo "✅ Will create certificates for $WILDCARD and $USER_DOMAIN"
 
@@ -50,6 +50,7 @@ TRUSTSTORE_PASS="$RANDOM_PASS"
 sudo mkdir -p "$CERTS_DIR"
 
 # Step 2: Create instances.yml without IPs
+# you must have to map the ips to the test domains on hosts file.
 echo "Creating instances.yml..."
 cat <<EOF | sudo tee "$CERTS_DIR/instances.yml" >/dev/null
 instances:
