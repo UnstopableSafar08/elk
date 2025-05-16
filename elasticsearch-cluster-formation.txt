@@ -1,7 +1,8 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 ### Configurations Explanation
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# hostmap
+
 
 ```yml
 # ===================== Cluster Basics =====================
@@ -837,21 +838,8 @@ openssl rsa -noout -modulus -in /etc/kibana/certs/sagar_com_np.key | openssl md5
 # output must be same.
 
 
-
-
-# dc and ndc elk
-# hostmap
-10.13.121.16    dc-elk.sagar.com.np
-10.13.121.16    dc-kibana.sagar.com.np
-10.13.121.16    ndc-elk.sagar.com.np
-10.13.121.16    ndc-kibana.sagar.com.np
-
-
 Login user: elastic
 Login password: Ela5Tic@#987
-
-
-
 
 #### metricbeat
 cd /tmp
