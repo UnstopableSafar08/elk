@@ -4,7 +4,7 @@
 # Email: sagarmalla08@gmail.com
 # Date: 13-MAY, 2025
 # Script to generate a CA and SAN certificates for a user-specified wildcard DNS
-# Used for Elasticsearch cluster, Kibana, and Logstash in a test environment
+# Used for Elasticsearch cluster, Kibana, and Logstash in a test/Prod environment
 # Includes SAN certificate verification at the end
 # Moves existing ca and elk-cluster directories to a backup directory if they exist
 
