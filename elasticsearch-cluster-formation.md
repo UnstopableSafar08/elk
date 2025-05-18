@@ -184,7 +184,7 @@ curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200/_cat/master?
 /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s node
 ```
 
-### Node-2,3,4,5
+<mark>### Node-2,3,4,5</mark> <br>
 Joining a cluster(ON node2,3,4,5).
 ```bash
 /usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token <paste the token>
@@ -194,6 +194,8 @@ Joining a cluster(ON node2,3,4,5).
 `/usr/share/elasticsearch/bin/elasticsearch --reconfigure-node`<br><br>
 > if the elasticsearch Brand-new node | never started:<br>
 `/usr/share/elasticsearch/bin/elasticsearch --enrollment-token` <paste-token-here>
+
+<br>
 
 | Command                                                                 | Purpose                                                                 | When to Use                                              | Output/Behavior                                                                  |
 |-------------------------------------------------------------------------|-------------------------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------------------------------|
@@ -222,7 +224,7 @@ Once the cluster formed, we can update the self-signed certificates or public ce
 Daemon reload, enable and start the elasticsearch
 
 
-### node2 and node3...node5 setup commands.
+<mark>### node2 and node3...node5 setup commands.</mark>
 ```bash
 sudo rpm -ivh elasticsearch-8.18.0-x86_64.rpm # or yum install elasticsearch -y
 ```
