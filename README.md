@@ -1,4 +1,4 @@
-# ELK Stack 8.17 Setup with Self-Signed SAN Certificates
+# ELK Stack 8.xx Setup with Self-Signed SAN Certificates
 
 This guide details the setup of ELK Stack (Elasticsearch, Logstash, Kibana, Filebeat, Metricbeat, Heartbeat) version 8.17 on a RHEL/CentOS 8 server with 8GB RAM, 4 cores, 500GB HDD, and network `192.168.121.0/24`. It includes Java 21 (BellSoft JDK 21.0.7) installation, RPM package downloads using `wget`, self-signed SAN certificates (wildcard `*.elk.local`, IPs `192.168.121.110-114`) in `.p12` format with passwords, TLS for HTTP and transport layers, Elasticsearch keystore management for certificates, host mappings using domain names (`es.elk.local`, `kibana.elk.local`, `logstash.elk.local`), and system configuration. Long commands are formatted as multiline for readability.
 
