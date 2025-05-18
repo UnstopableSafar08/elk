@@ -1,9 +1,7 @@
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+***
+# Elasticsearch Cluster Formation
+***
 ### Configurations Explanation
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# hostmap
-
-
 ```yml
 # ===================== Cluster Basics =====================
 
@@ -61,11 +59,10 @@ xpack.security.enrollment.enabled: false  # Disable auto-enrollment after setup
 ```
 
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+***
 # elasicsearch.yml
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+***
+```yml
 cluster.name: elk
 node.name: node1
 
@@ -96,76 +93,125 @@ cluster.initial_master_nodes: ["node1"] # node.name
 http.host: 192.168.121.110 # or 0.0.0.0, accessiable only by ip from the outside
 transport.host: 0.0.0.0
 
+```
 
+***
+> [!NOTE]
+> System Configurations : <a href="https://github.com/UnstopableSafar08/elk/blob/main/README.md" target="_blank">ELK Setup Guide.</a>
+***
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+### Install Java-jdk 17 or later.
+Download link : <a href="https://bell-sw.com/pages/downloads/?version=java-21&os=linux&bitness=64&package=jdk" target="_blank">Link</a>
 
-# Notes
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```bash
+# Download and install Java
+cd /opt/
+wget "https://download.bell-sw.com/java/21.0.7+9/bellsoft-jdk21.0.7+9-linux-amd64.tar.gz" # for X86_64
+# wget "https://download.bell-sw.com/java/21.0.7+9/bellsoft-jdk21.0.7+9-linux-aarch64.tar.gz" # for ARM(aarch64) architecture AmazonLinux
+tar xvzf bellsoft-jdk21*.tar.gz
+mv jdk-21.0.7 jdk21 # path is /opt/jdk21
 
-# i have node1, node2, node3, node4, node5
+# JAVA_HOME Set.
+echo -e 'export JAVA_HOME=/opt/jdk21\nexport PATH=$JAVA_HOME/bin:$PATH' >> ~/.bash_profile && source ~/.bash_profile
+java -version
+```
+
+### Download and install elasticsearch from rpm (for all nodes)
+```bash
+# Import GPG key.
+sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+# Download and install elasticsearch.
+wget "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.18.0-x86_64.rpm"
+sudo rpm -ivf elasticsearch-8.18.0-x86_64.rpm
+```
+
+# I have node1, node2, node3, node4, node5.
 Install the elasticsearch using rpm repo or using tarball.
     same installation for all the nodes.
     do not start at all.
 
-Configuration of yml file
-    cluster.name: elk
-    node.name: node1
-    network.host: 192.168.121.110
-    http.port: 9200
-    transport.port: 9300
-    cluster.initial_master_nodes: ["node1"] # this is required durig cluster setup, if the cluster formed, comment this line.
-    http.host: 192.168.121.110 # or 0.0.0.0, accessiable only by ip from the outside
-    transport.host: 0.0.0.0
+Default Configuration of yml file
+```yml    
+cluster.name: elk
+node.name: node1
+network.host: 192.168.121.110
+http.port: 9200
+transport.port: 9300
+cluster.initial_master_nodes: ["node1"] # this is required durig cluster setup, if the cluster formed, comment this line.
+http.host: 192.168.121.110 # or 0.0.0.0, accessiable only by ip from the outside
+transport.host: 0.0.0.0
+```
 
-Daemon reload, enable and start the elasticsearch
+### Daemon reload, enable and start the elasticsearch
+```bash
+# Troubleshooting Tips: Start and view the logs instant.
+sudo systemctl daemon-reexec ; sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -v
+
+systemctl enable elasticsearch
+systemctl start elasticsearch
+```
 Check the status of elasticsearch  | Check the logs /var/log/elasticsearch/
-Reset the elastic user password on node-1.
-    ### default user password reset
-    Note: if you install elasticsearch using tarball then default username and password will be `elastic`:`elastic`.
-    /usr/share/elasticsearch/bin/elasticsearch-reset-password -i -u elastic
-    /usr/share/elasticsearch/bin/elasticsearch-reset-password -i -u kibana_system # kibana@123#
-    ### new password: elastic@123#
 
-    # auto password generate for all services
-    # The following commands will generates the passwords for the user: elastic, kibana_system, kibana, beats_system, logstash_system etc.
-    /usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto 
+### Reset the elastic user password on node-1.
+```bash
+### default user password reset
+# Note: if you install elasticsearch using tarball then default username and password will be `elastic`:`elastic`.
+/usr/share/elasticsearch/bin/elasticsearch-reset-password -i -u elastic # password: elastic@123#
+/usr/share/elasticsearch/bin/elasticsearch-reset-password -i -u kibana_system # kibana@123#
 
-    ### check the SSL works or not.
-    curl -X GET -u elastic:elastic@123# https://192.168.121.110:9200 --cacert /etc/elasticsearc/cert/ca/ca.crt
+# auto password generate for all services
+# The following commands will generates the passwords for the user: elastic, kibana_system, kibana, beats_system, logstash_system etc.
+/usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto 
 
+### check the SSL works or not.
+curl -X GET -u elastic:elastic@123# https://192.168.121.110:9200 --cacert /etc/elasticsearc/cert/ca/ca.crt
+```
 
-verification
-    curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200
-    curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200/_cluster/health?pretty
-    curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200/_cat/nodes?pretty
-    curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200/_cat/master?pretty
+### verification
+```bash
+curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200
+curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200/_cluster/health?pretty
+curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200/_cat/nodes?pretty
+curl -X GET -k -u elastic:elastic@123# https://192.168.121.110:9200/_cat/master?pretty
+```
 
-create a enrollment token (ON node1) 
+### create a enrollment token (ON node1) 
 - this token will be expired on 30min, 
 - so joins cluster with in 30 min.
 - or after that the 30min you have to regenerate the new tokens to join the remaining nodes to cluster.
-    /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s node
+```bash
+/usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s node
+```
 
-# Node2,3,4,5
+### Node-2,3,4,5
 Joining a cluster(ON node2,3,4,5).
-    /usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token <paste the token>
+```bash
+/usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token <paste the token>
+```
+> [!INFO]
+> if the elasticsearch Node already initialized | reused/re-IP:<br>
+`/usr/share/elasticsearch/bin/elasticsearch --reconfigure-node`<br><br>
+> if the elasticsearch Brand-new node | never started:<br>
+`/usr/share/elasticsearch/bin/elasticsearch --enrollment-token` <paste-token-here>
 
-    # informations.
-    if the elasticsearch Node already initialized or reused/re-IP.
-        /usr/share/elasticsearch/bin/elasticsearch --reconfigure-node
-
-    if the elasticsearch Brand-new node, never started.
-        /usr/share/elasticsearch/bin/elasticsearch --enrollment-token <paste-token-here>
-    
-    | Command                                                                 | Purpose                                                                 | When to Use                                              | Output/Behavior                                                                  |
+| Command                                                                 | Purpose                                                                 | When to Use                                              | Output/Behavior                                                                  |
 |-------------------------------------------------------------------------|-------------------------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------------------------------|
 | `/usr/share/elasticsearch/bin/elasticsearch --reconfigure-node`        | Reconfigures an existing node’s identity (CA, certs, node name, etc.)  | When changing cluster name, node name, or rejoining clean | Re-initializes the node settings; may delete old identity files or certs        |
 | `/usr/share/elasticsearch/bin/elasticsearch --enrollment-token <token>`| Joins a new node to an existing secured cluster using a token          | When bootstrapping a **new node** into a secure cluster  | Uses the token to fetch CA certs and auto-configures security settings          |
 
-Daemon reload, enable and start the elasticsearch
-- at a time only one node can joins so do the above step one by one.
+### Daemon reload, enable and start the elasticsearch
+```bash
+# Troubleshooting Tips: Start and view the logs instant.
+sudo systemctl daemon-reexec ; sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -v
 
+systemctl enable elasticsearch
+systemctl start elasticsearch
+```
+> [!WARNING]
+> At a time only one node can joins the cluster(master-node). so do the above step one by one each nodes. **Don't try simultaneously.**
+
+### Starting Cluster Formation.
 Once the cluster formed, we can update the self-signed certificates or public certificate on the cluster nodes.
 - Generates the self-signed CA and SSL certificates on the elasticsearch first node with the help of cert-utils tools.
 - Copy the CA certificates to all the nodes path `/etc/elasticsearch/certs/`.
@@ -176,20 +222,35 @@ Once the cluster formed, we can update the self-signed certificates or public ce
 Daemon reload, enable and start the elasticsearch
 
 
-# node2 and node3...node5 setup commands.
+### node2 and node3...node5 setup commands.
+```bash
 sudo rpm -ivh elasticsearch-8.18.0-x86_64.rpm # or yum install elasticsearch -y
+```
+> [!NOTE] 
+> - The enrollmet-token generated by node1 only validate for 30mins, after the 30min this will not works.
+> - If the token is not expired, then it will used to join a cluster for all the other node2,3,4,5 within the 30 mins.
+> - If the token is expired (show the error like: ...with exit code 69) then, new node cant join the cluster. In such a case goto node and regenerate the token and join.
 
-# NOTE: the enrollmet-token generated by node1 only validate for 30mins, after the 30min this will not works.
-# If the token is not expired, then it will used to join a cluster for all the other node2,3,4,5 within the 30 mins.
-# If the token is expired (show the error like: ...with exit code 69) then, new node cant join the cluster. In such a case goto node and regenerate the token and join.
+Joining Cluster with a enrollment-tokens.
+```bash
 /usr/share/elasticsearch/bin/elasticsearch-reconfigure-node --enrollment-token eyJ2ZXIiOiI4LjE0LjAiLCJhZHIiOlsiMTkyLjE2OC4xMjEuMTEwOjkyMDAiXSwiZmdyIjoiZWViZGJjZTI5OWVkMThiYzFhNzkzODA5NjRjNGIzMThiZWZlMGZmMWI4ZTJkMTc5ZGI3NWIwYWJjOTg5Mzk5YSIsImtleSI6IjI4SnpqSllCcDdZTXVsdWhpWFVMOlBPTHpoZ0hzRDVhQWY0MWlqX1hSaUEifQ==
-vi /etc/elasticsearch/jvm.options
-vi /etc/elasticsearch/elasticsearch.yml
-systemctl daemon-reload
+```
+JVM Options:
+Assign a half of the Total RAM to jvm options. In my case total ram is : 8GB
+```bash
+echo "-Xms4g" >> /etc/elasticsearch/jvm.options
+echo "-Xmx4g" >> /etc/elasticsearch/jvm.options
+```
+### Elasticsearch Service commands.
+```bash
+# Troubleshooting Tips: Start and view the logs instant.
+sudo systemctl daemon-reexec ; sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -v
+
 systemctl enable elasticsearch
 systemctl start elasticsearch
 systemctl status elasticsearch
 systemctl stop elasticsearch
+```
 
 #### Get the config only form the yml file.
 ```bash
@@ -197,9 +258,12 @@ grep -v '^\s*#' /etc/elasticsearch/elasticsearch.yml | grep -v '^\s*$'  # get co
 ```
 
 
-
 ### The configurations of the nodes during the cluster formation.
-node1:
+```bash
+vi /etc/elasticsearch/elasticsearch.yml
+```
+
+## node1:
 ```yml
 cluster.name: elk
 node.name: node1
@@ -222,7 +286,7 @@ http.host: 0.0.0.0
 ```
 
 
-node2:
+## node2:
 ```yml
 cluster.name: elk
 node.name: node1
@@ -245,7 +309,7 @@ http.host: 0.0.0.0
 transport.host: 0.0.0.0
 ```
 
-node3:
+## Node3 (do same for node4,5):
 ```yml
 cluster.name: elk
 node.name: node1
@@ -273,13 +337,15 @@ comment the following line if existing on the each nodes.
   `cluster.initial_master_nodes: ["node1"]`
 
 add/verify the ips/dns/hostname of all clustre nodes to the following line
-  `transport.host: 0.0.0.0`
-  `discovery.seed_hosts: ["192.168.121.110:9300", "192.168.121.112:9300", "192.168.121.111:9300"]`
+ 
+ - `transport.host: 0.0.0.0`
+ - `discovery.seed_hosts: ["192.168.121.110:9300", "192.168.121.112:9300","192.168.121.111:9300"]`
 
 
 ### updated config of elasticsearch
 CMD:  `grep -v '^\s*#' /etc/elasticsearch/elasticsearch.yml | grep -v '^\s*$'  # get config`
-Node1:
+
+## Node1:
 ```yml
 cluster.name: elk
 node.name: node1
@@ -302,7 +368,7 @@ http.host: 0.0.0.0
 transport.host: 0.0.0.0
 ```
 
-Node2:
+## Node2:
 ```yml
 cluster.name: elk
 node.name: node2
@@ -325,7 +391,7 @@ http.host: 0.0.0.0
 transport.host: 0.0.0.0
 ```
 
-Node3:
+## Node3 (same for node4,5):
 ```yml
 cluster.name: elk
 node.name: node3
@@ -349,7 +415,7 @@ transport.host: 0.0.0.0
 ```
 
 ### self-signed cert
-Node: 
+## Node1: 
 ```yml
 cluster.name: elk
 node.name: node1
@@ -380,7 +446,7 @@ xpack.security.transport.ssl:
     - /etc/elasticsearch/certs/ca/ca.crt
 ```
 
-Node2:
+## Node2:
 ```yml
 cluster.name: elk
 node.name: node2
@@ -411,7 +477,7 @@ xpack.security.transport.ssl:
     - /etc/elasticsearch/certs/ca/ca.crt
 ```
 
-Node3:
+## Node3 (same for node4,5):
 ```yml
 cluster.name: elk
 node.name: node3
@@ -442,7 +508,7 @@ xpack.security.transport.ssl:
     - /etc/elasticsearch/certs/ca/ca.crt
 ```
 
-Kibana:
+## Kibana:
 ```yml
 server.name: kibana.elk.local
 server.host: "192.168.121.110" # or 0.0.0.0
@@ -458,14 +524,20 @@ elasticsearch.serviceAccountToken: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS10b2tlbjpq
 ```
 
 
-### ERRORS:
-ERROR: Aborting enrolling to cluster. This node does not appear to be auto-configured for security. 
+### ERROR:
+> ERROR: Aborting enrolling to cluster. This node does not appear to be auto-configured for security. 
 Expected configuration is missing from elasticsearch.yml., with exit code 64
 
 Solutions:
-uninstall the elasticsearch completelly.
+### uninstall the elasticsearch completely.
+
+```bash
+# Delete the cluster-nodes files.
+rm -rf /var/lib/elasticsearch/node*
+```
 
 ```bash  
+# OR Completely uninstall,
 systemctl stop elasticsearch
 systemctl disable elasticsearch
 yum remove -y elasticsearch
@@ -482,17 +554,17 @@ groupdel elasticsearch 2>/dev/null
 rpm -qa | grep elastic*
 systemctl daemon-reload
 ```
-reboot the server.
-reinstall the elasticsearch.
-rejoin the cluster by < -reconfigure-node --enrollment-token > with the newly created token by node1
+- reboot the server.
+- reinstall the elasticsearch.
+- rejoin the cluster by < -reconfigure-node --enrollment-token > with the newly created token by node1
 
 
 ### ERROR
-ERROR: Aborting enrolling to cluster. 
+**ERROR:** Aborting enrolling to cluster. 
 Could not communicate with the node on any of the addresses from the enrollment token. 
 All of [192.168.121.110:9200] were attempted., with exit code 69
 
-Solutions:
+**Solutions:**
 Check the API of the node1
   curl -k https://192.168.121.110:9200 , if get respond then ok.
   check the yml config of node1.
@@ -500,16 +572,21 @@ Check the API of the node1
 rejoin the cluster by < -reconfigure-node --enrollment-token >
   `elasticsearch-reconfigure-node --enrollment-token <token with the newly created token by node1>`
 
-Daemon reload and service restart
-  systemctl daemon-reload
-  systemctl restart elasticsearch
+### Daemon reload and service restart
+```bash
+# Troubleshooting Tips: Start and view the logs instant.
+sudo systemctl daemon-reexec ; sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -v
+
+systemctl restart elasticsearch
+```
 
 ### Final Check
+```bash
 curl -k -u elastic:elastic@123# -X GET "https://192.168.121.112:9200/_cat/nodes?pretty"
 192.168.121.112 53 90 68 0.99 0.43 0.16 cdfhilmrstw - node2
 192.168.121.111 53 83 35 0.55 0.26 0.09 cdfhilmrstw - node3
 192.168.121.110 48 93  3 0.26 0.21 0.09 cdfhilmrstw * node1
-
+```
 
 ### ERROR
 If the cluster_uuid doesnt match, then delete the nodes folder in the data node server,
@@ -521,38 +598,57 @@ and restart
 Check again the cluster health for the correct value
   `curl -XGET 'http://localhost:9200/_cluster/health?pretty'`
 
+***
 
-### kibana install and setup
-install java
-add elastic repo
-add elastic GPG key.
+# Kibana install and setup
+- install java - same as above
+- add elastic repo
+- add elastic GPG key.
 
-Install kibana rpm # or yum install kibana -y
-  wget https://artifacts.elastic.co/downloads/kibana/kibana-8.18.0-x86_64.rpm
-  sudo rpm -ivh kibana-8.18.0-x86_64.rpm
-  Do not start the service.
+### Install kibana rpm # or yum install kibana -y
+```bash
+# Import GPG key.
+sudo rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
-Copy the self-signed certificate that generated earlier on elasticsearch server to kibana server 
-certificate path: /etc/kibana/certs/
-  mkdir -p /etc/kibana/certs/
+# Download and install kibana
+wget https://artifacts.elastic.co/downloads/kibana/kibana-8.18.0-x86_64.rpm
+sudo rpm -ivh kibana-8.18.0-x86_64.rpm
+```  
+> [!CAUTION]
+> Do not start the service. 
+
+**Copy the self-signed certificate that generated earlier on elasticsearch server to kibana server** 
+**certificate path: /etc/kibana/certs/**
+```bash
+mkdir -p /etc/kibana/certs/
+```
 
 ### change the Certificate ownership to kibana
-  chown -R kibana:kibana /etc/kibana /var/lib/kibana /var/log/kibana
-  chown -R kibana:kibana /etc/kibana/certs
-  chmod -R 750 /etc/kibana/certs
+```bash
+chown -R kibana:kibana /etc/kibana /var/lib/kibana /var/log/kibana
+chown -R kibana:kibana /etc/kibana/certs
+chmod -R 750 /etc/kibana/certs
+```
+### Create Service Token
+Run this command on the `Elasticsearch server`: 
+```bash
+/usr/share/elasticsearch/bin/elasticsearch-service-tokens create elastic/kibana kibana-token
+```
+Copy the generated token. **This token will be valid for 30 min only**, after that it will be expired.
 
-Create Service Token
-  Run this command on the `Elasticsearch server`: 
-  /usr/share/elasticsearch/bin/elasticsearch-service-tokens create elastic/kibana kibana-token
-  Copy the generated token. This token will be valid for 30 min only, after that it will be expired.
+### Run this command on the Kibana server: 
+```bash
+/usr/share/kibana/bin/kibana add elasticsearch.serviceAccountToken 
+```
+- Press Enter.
+- < Paste in the token after the prompt.>
 
-Run this command on the Kibana server: 
-  /usr/share/kibana/bin/kibana add elasticsearch.serviceAccountToken 
-  Press Enter.
-  < Paste in the token after the prompt.>
-
-
+### Kibana configuration.
+```bash
 vi /etc/kibana/kibana.yml
+```
+
+Kibana.yml
 ```yml
 # configurations
 server.port: 5601
@@ -567,15 +663,21 @@ elasticsearch.ssl.verificationMode: full
 elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/ca/ca.crt"]
 elasticsearch.serviceAccountToken: "elasticsearch kibana-service token here"
 ```
+
+```bash
 systemctl daemon-reload
 systemctl enable kibana;
 systemctl start kibana;
-check the logs.
-Browser: https://192.168.121.110:5601
+```
+
+> Browser: https://192.168.121.110:5601
 
 
-#  Cluster formation
+#  Kibana Cluster formation
+```bash
 vi /etc/kibana/kibana.yml
+```
+add `elasticsearch.hosts: ["https://192.168.121.110:9200", "https://192.168.121.112:9200", "https://192.168.121.112:9200"]` on kibana.yml 
 ```yml
 # configurations
 server.port: 5601
@@ -591,14 +693,20 @@ elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/ca/ca.crt"]
 elasticsearch.serviceAccountToken: "elasticsearch kibana-service token here"
 ```
 
-systemctl daemon-reload
-systemctl enable kibana;
-systemctl start kibana;
-check the logs.
-Browser: https://192.168.121.110:5601
+```bash
+#   Troubleshooting : Start and check the logs.
+sudo systemctl daemon-reexec ; sudo -u kibana /usr/share/kibana/bin/kibana
+
+# OR
+systemctl enable kibana
+systemctl start kibana
+```
+
+> Browser: https://192.168.121.110:5601
 
 
 ### complete uninstall
+```bash
 #!/bin/bash
 
 echo "Stopping Kibana service..."
@@ -617,310 +725,9 @@ sudo systemctl daemon-reload
 #sudo systemctl reset-failed
 
 echo "Kibana has been completely uninstalled."
-
-
+```
 
 ### create a new user with superuser roles
+```bash
 ./elasticsearch-users useradd admin -p 'elastic@123#' -r superuser
-
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# ELK with the publically signed CERTS.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-#### elk with publically signed certs
-### ELASTICSEARCH CONFIGURATION.
-grep -v '^\s*#' /etc/elasticsearch/elasticsearch.yml | grep -v '^\s*$'  # get es
-cluster.name: elk
-node.name: elk.sagar.com.np
-path.data: /var/lib/elasticsearch
-path.logs: /var/log/elasticsearch
-network.host: elk.sagar.com.np
-http.port: 9200
-xpack.security.enabled: true
-xpack.security.enrollment.enabled: true
-xpack.security.http.ssl:
-  enabled: true
-  certificate: /etc/elasticsearch/certs/full.crt
-  key: /etc/elasticsearch/certs/private.key
-
-# xpack.security.http.ssl.verification_mode: certificate # to fix the error: java.security.cert.CertificateException: No subject alternative names matching IP address 192.168.121.113 found
-# xpack.security.http.ssl.verification_mode: full # enable this after password reset or not leave it as comment.
-
-xpack.security.transport.ssl:
-  enabled: true
-  verification_mode: certificate
-  keystore.path: certs/transport.p12
-  truststore.path: certs/transport.p12
-cluster.initial_master_nodes: ["elk.sagar.com.np"]
-http.host: 0.0.0.0
-
-Options of : xpack.security.http.ssl.verification_mode
-| Mode          | Meaning                                                                 |
-| ------------- | ----------------------------------------------------------------------- |
-| `full`        | 🔒 **Strictest** — verifies certificate **trust AND hostname/IP (SAN)** |
-| `certificate` | ✅ Verifies certificate **trust only**, skips hostname/IP check          |
-| `none`        | ⚠️ No verification at all (⚠️ **Not secure**)                           |
-
-
-
-
-### KIBANA CONFIGURATION.
-
-grep -v '^\s*#' /etc/kibana/kibana.yml | grep -v '^\s*$'  # get kibana
-server.port: 5601
-server.host: "0.0.0.0"
-server.publicBaseUrl: "http://kibana.sagar.com.np:5601"
-server.name: "kibana-server"
-server.ssl.enabled: true
-server.ssl.certificate: /etc/kibana/certs/full.crt
-server.ssl.key: /etc/kibana/certs/private.key
-elasticsearch.hosts: ["https://elk.sagar.com.np:9200"]
-# elasticsearch.username: "kibana_system"
-# elasticsearch.password: "elastic@123#"
-elasticsearch.serviceAccountToken: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYTp0bXExZGhCeVRIYS16MG5FcGpRY2ln"
-
-elasticsearch.ssl.verificationMode: full
-elasticsearch.ssl.certificateAuthorities: [ "/etc/kibana/certs/full.crt" ]
-logging:
-  appenders:
-    file:
-      type: file
-      fileName: /var/log/kibana/kibana.log
-      layout:
-        type: json
-  root:
-    appenders:
-      - default
-      - file
-pid.file: /run/kibana/kibana.pid
-
-
-
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-#  OPTIONS 2: using .p12 certificates.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# Certificate Files Used
-Extracted from STAR_sagar_com_np.zip:
-  - STAR_sagar_com_np.crt — Domain certificate
-  - sagar_com_np.key — Private key
-  - AAACertificateServices.crt
-  - USERTrustRSAAAACA.crt
-  - SectigoRSADomainValidationSecureServerCA.crt
-
-# Create a full chain certificate.
-cat AAACertificateServices.crt USERTrustRSAAAACA.crt SectigoRSADomainValidationSecureServerCA.crt > full-chain.crt
-
-# Creating PKCS#12 Keystore (sagar.p12)
-openssl pkcs12 -export \
-  -in STAR_sagar_com_np.crt \
-  -inkey sagar_com_np.key \
-  -certfile full-chain.crt \
-  -out sagar.p12 \
-  -password pass:changeit
-
-# tuG*JM+yZrXNBT@%&c5$Qg
-# openssl pkcs12 -export -in STAR_sagar_com_np.crt -inkey sagar_com_np.key -certfile full-chain.crt -out sagar.p12 -password pass:'tuG*JM+yZrXNBT@%&c5$Qg'
-
-# Generate a Truststore (truststore.p12)
-keytool -importcert \
-  -alias sectigo-root \
-  -file full-chain.crt \
-  -keystore truststore.p12 \
-  -storetype PKCS12 \
-  -storepass changeit \
-  -noprompt
-
-# Generate a Truststore (truststore.p12)
-# keytool -importcert -alias sectigo-root -file full-chain.crt -keystore truststore.p12 -storetype PKCS12 -storepass 'tuG*JM+yZrXNBT@%&c5$Qg' -noprompt
-
-# elasticsearch keystore view, remove and add new for public certificate.
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore list
-
-# remove
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.http.ssl.keystore.secure_password
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.keystore.secure_password
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.truststore.secure_password
-
-# add
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add xpack.security.http.ssl.keystore.secure_password
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add xpack.security.transport.ssl.keystore.secure_password
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add xpack.security.transport.ssl.truststore.secure_password
-
-# password view
-/usr/share/elasticsearch/bin/elasticsearch-keystore show autoconfiguration.password_hash
-/usr/share/elasticsearch/bin/elasticsearch-keystore show keystore.seed
-/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.http.ssl.keystore.secure_password
-/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.transport.ssl.keystore.secure_password
-/usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.transport.ssl.truststore.secure_password
-
-# permissions.
-sudo chown -R elasticsearch:elasticsearch /etc/elasticsearch
-chmod 640 /etc/elasticsearch/certs/sagar-crts/*.p12
-
-# elasticsearch.yml
-cluster.name: elk
-node.name: elk.sagar.com.np
-path.data: /var/lib/elasticsearch
-path.logs: /var/log/elasticsearch
-network.host: elk.sagar.com.np
-http.port: 9200
-http.host: 0.0.0.0
-xpack.security.enabled: true
-xpack.security.http.ssl.enabled: true
-xpack.security.http.ssl.keystore.path: /etc/elasticsearch/certs/sagar-crts/sagar.p12
-# xpack.security.http.ssl.verification_mode: certificate # to fix the error: java.security.cert.CertificateException: No subject alternative names matching IP address 192.168.121.113 found
-# xpack.security.http.ssl.verification_mode: full # enable this after password reset or leave it as comment.
-
-xpack.security.transport.ssl.enabled: true
-xpack.security.transport.ssl.verification_mode: certificate
-xpack.security.transport.ssl.keystore.path: /etc/elasticsearch/certs/sagar-crts/sagar.p12
-xpack.security.transport.ssl.truststore.path: /etc/elasticsearch/certs/sagar-crts/truststore.p12
-cluster.initial_master_nodes: ["elk.sagar.com.np"]
-
-# restart
-sudo systemctl restart elasticsearch
-sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch -v # this is the best way to check the logs
-
-
-#  Copy the certificates to kibana/certs path
-cp /etc/elasticsearch/certs/sagar-crts/STAR_sagar_com_np.crt \
-  /etc/elasticsearch/certs/sagar-crts/sagar_com_np.key \  
-  /etc/elasticsearch/certs/sagar-crts/full-chain.crt  \
-  /etc/kibana/certs/.
-
-# update permission
-sudo chown kibana:kibana /etc/kibana/certs/*
-chmod 640 /etc/kibana/certs/*
-
-# kibana.yml
-config kibana
-server.port: 5601
-server.host: "0.0.0.0"
-server.publicBaseUrl: "https://kibana.sagar.com.np:5601"
-server.name: "kibana.sagar.com.np"
-server.ssl.enabled: true
-server.ssl.certificate: /etc/kibana/certs/STAR_sagar_com_np.crt
-server.ssl.key: /etc/kibana/certs/sagar_com_np.key
-elasticsearch.hosts: ["https://elk.sagar.com.np:9200"]
-elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/full-chain.crt"]
-elasticsearch.ssl.verificationMode: full
-elasticsearch.serviceAccountToken: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYTp0bXExZGhCeVRIYS16MG5FcGpRY2ln"
-logging:
-  appenders:
-    file:
-      type: file
-      fileName: /var/log/kibana/kibana.log
-      layout:
-        type: json
-  root:
-    appenders:
-      - default
-      - file
-pid.file: /run/kibana/kibana.pid
-
-
-
-# restart the kibana
-systemctl restart kibana
-sudo -u kibana /usr/share/kibana/bin/kibana # this is the best way to check the logs
-
-# certificate verification
-openssl s_client -connect elk.sagar.com.np:9200 -showcerts
-
-
-openssl x509 -noout -modulus -in /etc/kibana/certs/STAR_sagar_com_np.crt | openssl md5
-openssl rsa -noout -modulus -in /etc/kibana/certs/sagar_com_np.key | openssl md5
-# output must be same.
-
-
-Login user: elastic
-Login password: Ela5Tic@#987
-
-#### metricbeat
-cd /tmp
-wget https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.17.0-x86_64.rpm
-sudo rpm -ivh metricbeat-8.17.0-x86_64.rpm
-
-cp metricbeat.yml  metricbeat.yml_20250411
-
-
-
-sudo vim /etc/metricbeat/metricbeat.yml
-metricbeat.config.modules:
-  path: ${path.config}/modules.d/*.yml
-  reload.enabled: false
-setup.template.settings:
-  index.number_of_shards: 1
-  index.codec: best_compression
-setup.kibana:
-  host: "dc-kibana.sagar.com.np:5601"
-output.elasticsearch:
-  hosts: ["https://dc-elk.sagar.com.np:9200"]
-  preset: balanced
-  protocol: "https"
-  username: "elastic"
-  password: "Ela5Tic@#987"
-processors:
-  - add_host_metadata: ~
-  - add_cloud_metadata: ~
-  - add_docker_metadata: ~
-  - add_kubernetes_metadata: ~
-
-
-
-sudo metricbeat modules enable system
-sudo metricbeat setup --dashboards
-
-sudo systemctl enable metricbeat
-sudo systemctl start metricbeat
-journalctl -u metricbeat -f
-
-
-
-
-# api generate
-curl -u elastic:Ela5Tic@#987 -X POST "http://dc-elk.sagar.com.np:9200/_security/api_key" -H 'Content-Type: application/json' -d '{
-  "name": "metricbeat-api-key",
-  "role_descriptors": {
-    "metricbeat_writer": {
-      "cluster": ["monitor", "read_ilm"],
-      "index": [
-        {
-          "names": ["metricbeat-*"],
-          "privileges": ["write", "create_index"]
-        }
-      ]
-    }
-  }
-}'
-
-# kibana
-POST /_security/api_key
-{
-  "name": "metricbeat-api-key",
-  "role_descriptors": {
-    "metricbeat_writer": {
-      "cluster": ["monitor", "read_ilm"],
-      "index": [
-        {
-          "names": ["metricbeat-*"],
-          "privileges": ["write", "create_index"]
-        }
-      ]
-    }
-  }
-}
-
-# output
-{
-  "id": "7psRv5YBoEGT3O3BrBqD",
-  "name": "metricbeat-api-key",
-  "api_key": "YtfMfJsiSSeUVZV_EYQ0JA",
-  "encoded": "N3BzUnY1WUJvRUdUM08zQnJCcUQ6WXRmTWZKc2lTU2VVVlpWX0VZUTBKQQ=="
-}
-
+```
