@@ -1,8 +1,10 @@
 ***
-# ELK with the publically signed CERTS.
+#### ELK with the publically signed CERTS.
 ***
-Directly use the certificate chain and private key
+Directly use the certificate-chain and private key.
+
 Get the configurations only.
+
 ```bash
 grep -v '^\s*#' /etc/elasticsearch/elasticsearch.yml | grep -v '^\s*$'  # get es
 ```
@@ -35,6 +37,7 @@ http.host: 0.0.0.0
 ```
 
 Options of : xpack.security.http.ssl.verification_mode
+
 | Mode          | Meaning                                                                 |
 | ------------- | ----------------------------------------------------------------------- |
 | `full`        | 🔒 **Strictest** — verifies certificate **trust AND hostname/IP (SAN)** |
@@ -44,7 +47,7 @@ Options of : xpack.security.http.ssl.verification_mode
 
 
 
-## KIBANA CONFIGURATION.
+#### KIBANA CONFIGURATION.
 ```bash
 grep -v '^\s*#' /etc/kibana/kibana.yml | grep -v '^\s*$'  # get kibana
 ```
@@ -81,7 +84,7 @@ pid.file: /run/kibana/kibana.pid
 
 
 ***
-#  OPTIONS 2: using .p12 certificates.
+####  OPTIONS 2: using .p12 certificates.
 ***
 
 #### Certificate Files Used
@@ -191,6 +194,7 @@ cp /etc/elasticsearch/certs/sagar-crts/STAR_sagar_com_np.crt \
 
 #### update permission
 ```bash
+mkdir -p /etc/kibana/certs
 sudo chown kibana:kibana /etc/kibana/certs/*
 chmod 640 /etc/kibana/certs/*
 ```
@@ -239,10 +243,8 @@ openssl rsa -noout -modulus -in /etc/kibana/certs/sagar_com_np.key | openssl md5
 #### output must be same.
 ```
 
-Login user: elastic
-Login password: Ela5Tic@#987
 
-#### metricbeat
+#### Setup Metricbeat.
 ```bash
 cd /tmp
 wget https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.17.0-x86_64.rpm
@@ -260,13 +262,13 @@ setup.template.settings:
   index.number_of_shards: 1
   index.codec: best_compression
 setup.kibana:
-  host: "dc-kibana.sagar.com.np:5601"
+  host: "kibana.sagar.com.np:5601"
 output.elasticsearch:
-  hosts: ["https://dc-elk.sagar.com.np:9200"]
+  hosts: ["https://elk.sagar.com.np:9200"]
   preset: balanced
   protocol: "https"
   username: "elastic"
-  password: "Ela5Tic@#987"
+  password: "<elasticsearch_password>"
 processors:
   - add_host_metadata: ~
   - add_cloud_metadata: ~
@@ -290,7 +292,7 @@ journalctl -u metricbeat -f
 
 #### api generate
 ```json
-curl -u elastic:Ela5Tic@#987 -X POST "http://dc-elk.sagar.com.np:9200/_security/api_key" -H 'Content-Type: application/json' -d '{
+curl -u elastic:Ela5Tic@#987 -X POST "http://elk.sagar.com.np:9200/_security/api_key" -H 'Content-Type: application/json' -d '{
   "name": "metricbeat-api-key",
   "role_descriptors": {
     "metricbeat_writer": {
