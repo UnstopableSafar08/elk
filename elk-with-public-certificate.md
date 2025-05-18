@@ -1,7 +1,9 @@
+# ELK with the publically signed CERTS.
+<br>
+
 ***
-#### ELK with the publically signed CERTS.
+####  OPTIONS 1: Directly use the certificate-chain and private key.
 ***
-Directly use the certificate-chain and private key.
 
 Get the configurations only.
 
