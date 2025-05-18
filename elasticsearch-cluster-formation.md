@@ -60,7 +60,7 @@ xpack.security.enrollment.enabled: false  # Disable auto-enrollment after setup
 
 
 ***
-# elasicsearch.yml
+# Dummy elasicsearch.yml
 ***
 ```yml
 cluster.name: elk
