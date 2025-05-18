@@ -1,16 +1,13 @@
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-#### ELK with the publically signed CERTS.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+***
+# ELK with the publically signed CERTS.
+***
 Directly use the certificate chain and private key
-
-#### elk with publically signed certs
-#### ELASTICSEARCH CONFIGURATION.
 Get the configurations only.
-
 ```bash
 grep -v '^\s*#' /etc/elasticsearch/elasticsearch.yml | grep -v '^\s*$'  # get es
 ```
-
+## ELASTICSEARCH CONFIGURATION.
+elasticsearch.yml file content.
 ```yml
 cluster.name: elk
 node.name: elk.sagar.com.np
@@ -47,11 +44,11 @@ Options of : xpack.security.http.ssl.verification_mode
 
 
 
-#### KIBANA CONFIGURATION.
+## KIBANA CONFIGURATION.
 ```bash
 grep -v '^\s*#' /etc/kibana/kibana.yml | grep -v '^\s*$'  # get kibana
 ```
-
+kibana.yml file content.
 ```yml
 server.port: 5601
 server.host: "0.0.0.0"
@@ -83,9 +80,9 @@ pid.file: /run/kibana/kibana.pid
 
 
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-####  OPTIONS 2: using .p12 certificates.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+***
+#  OPTIONS 2: using .p12 certificates.
+***
 
 #### Certificate Files Used
 Extracted from STAR_sagar_com_np.zip:
@@ -151,7 +148,7 @@ sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add xp
 /usr/share/elasticsearch/bin/elasticsearch-keystore show xpack.security.transport.ssl.truststore.secure_password
 ```
 
-#### permissions.
+#### Update permissions.
 ```bash
 sudo chown -R elasticsearch:elasticsearch /etc/elasticsearch
 chmod 640 /etc/elasticsearch/certs/sagar-crts/*.p12
