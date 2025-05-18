@@ -256,6 +256,8 @@ cp metricbeat.yml  metricbeat.yml_20250411
 
 ```bash
 sudo vim /etc/metricbeat/metricbeat.yml
+```  
+Metricbeat config.
 ```yml
 metricbeat.config.modules:
   path: ${path.config}/modules.d/*.yml
