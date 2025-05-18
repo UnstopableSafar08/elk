@@ -1,4 +1,6 @@
+***
 # ELK with the publically signed CERTS.
+***
 <br>
 
 ***
@@ -65,7 +67,7 @@ server.ssl.key: /etc/kibana/certs/private.key
 elasticsearch.hosts: ["https://elk.sagar.com.np:9200"]
 # elasticsearch.username: "kibana_system"
 # elasticsearch.password: "elastic@123#"
-elasticsearch.serviceAccountToken: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYTp0bXExZGhCeVRIYS16MG5FcGpRY2ln"
+elasticsearch.serviceAccountToken: "<serviceAccountToken-here>"
 
 elasticsearch.ssl.verificationMode: full
 elasticsearch.ssl.certificateAuthorities: [ "/etc/kibana/certs/full.crt" ]
@@ -214,7 +216,7 @@ server.ssl.key: /etc/kibana/certs/sagar_com_np.key
 elasticsearch.hosts: ["https://elk.sagar.com.np:9200"]
 elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/full-chain.crt"]
 elasticsearch.ssl.verificationMode: full
-elasticsearch.serviceAccountToken: "AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYTp0bXExZGhCeVRIYS16MG5FcGpRY2ln"
+elasticsearch.serviceAccountToken: "<serviceAccountToken-here>"
 logging:
   appenders:
     file:
