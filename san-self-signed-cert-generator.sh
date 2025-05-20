@@ -120,10 +120,10 @@ sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove
 sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore remove xpack.security.transport.ssl.truststore.secure_password"
 
 echo -e "\n# # Add new secure passwords interactively
-echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.keystore.secure_password
-echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.truststore.secure_password
-echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.keystore.secure_password
-echo "$RANDOM_PASS" | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.truststore.secure_password"
+echo '"$RANDOM_PASS"' | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.keystore.secure_password
+echo '"$RANDOM_PASS"' | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.http.ssl.truststore.secure_password
+echo '"$RANDOM_PASS"' | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.keystore.secure_password
+echo '"$RANDOM_PASS"' | sudo -u elasticsearch /usr/share/elasticsearch/bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.truststore.secure_password"
 
 echo -e "\n# Verify keystore passwords (use cautiously in production)
 /usr/share/elasticsearch/bin/elasticsearch-keystore show autoconfiguration.password_hash
