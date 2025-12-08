@@ -309,9 +309,21 @@ A. **Certificate Architecture**:
     ```
 2. **Set JVM Options**:
    ```bash
-   echo "-Xms4g" >> /etc/elasticsearch/jvm.options
-   echo "-Xmx4g" >> /etc/elasticsearch/jvm.options
+   echo "-Xms6g" >> /etc/elasticsearch/jvm.options
+   echo "-Xmx6g" >> /etc/elasticsearch/jvm.options
    ```
+
+  ```bash
+  mkdir -p /etc/systemd/system/elasticsearch.service.d
+  cat << EOF > /etc/systemd/system/elasticsearch.service.d/override.conf
+  [Service]
+  Environment="ES_JAVA_OPTS=-Xms6g -Xmx6g"
+  MemoryMax=8G
+  EOF
+  # systemctl daemon-reexec
+  # systemctl restart elasticsearch
+  ```
+   
 3. **Manage Elasticsearch Keystore**:
    ```bash
    # List current keystore entries
