@@ -597,10 +597,24 @@ Add service token on `kibana node` (This will be deprecated on the latest versio
      password: "<elastic_password>"
      ssl.certificate_authorities: ["/etc/metricbeat/certs/ca_elk.local.crt"]
    ```
+  ### Memory limits
+  ```bash
+  mkdir -p /etc/systemd/system/metricbeat.service.d
+  cat << EOF > /etc/systemd/system/metricbeat.service.d/override.conf
+  [Service]
+  MemoryMax=512M
+  EOF
+  ```
+
+   
 2. **Start Metricbeat**:
    ```bash
+   systemctl daemon-reexec
    systemctl enable metricbeat
    systemctl start metricbeat
+   systemctl restart metricbeat
+   systemctl show metricbeat --property=MemoryMax
+   ps -o pid,rss,vsz,cmd -p $(pgrep metricbeat)
    ```
 
 ## Configure Heartbeat
