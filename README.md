@@ -418,7 +418,7 @@ Add service token on `kibana node` (This will be deprecated on the latest versio
           - file
     pid.file: /run/kibana/kibana.pid
    ```
-    #### Kibana returns HTTP 500 and continuously shows the popup. fix
+    #### Optional : Kibana returns HTTP 500 and continuously shows the popup. fix
     Generate a kibana xpack
     ```bash
     /usr/share/kibana/bin/kibana-encryption-keys generate
@@ -429,6 +429,15 @@ Add service token on `kibana node` (This will be deprecated on the latest versio
     xpack.reporting.encryptionKey: 5daddd8c8b002f97fb08f5a4932d7bb8
     xpack.security.encryptionKey: 24edf7b01bb79fc176725ecfe2c04b9f
     ```
+    #### RAM limit for kibana
+    ```bash
+    # RAM limit for kibana service.
+    mkdir -p /etc/systemd/system/kibana.service.d
+    cat << EOF > /etc/systemd/system/kibana.service.d/override.conf
+    [Service]
+    Environment="NODE_OPTIONS=--max-old-space-size=1024"
+    EOF
+    ```
    
 2. **Start Kibana**:
    ```bash
@@ -436,8 +445,13 @@ Add service token on `kibana node` (This will be deprecated on the latest versio
    sudo systemctl daemon-reexec ; sudo -u kibana /usr/share/kibana/bin/kibana
    
    # OR
+   systemctl daemon-reexec
    systemctl enable kibana
    systemctl start kibana
+
+   # RAM Limit verify
+   cat /proc/$(pgrep -f kibana)/environ | tr '\0' '\n' | grep NODE_OPTIONS
+   ps -o pid,rss,vsz,cmd -p $(pgrep -f kibana)
    ```
 ## Elasticsearch and kibana Dev tools cmds.
    ```bash
