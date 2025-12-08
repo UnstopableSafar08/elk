@@ -1,11 +1,13 @@
 # Elastic Stack Memory Limit Setup
 
 This guide provides commands and configuration for limiting memory usage for the full Elastic Stack:
-Elasticsearch, Kibana, Logstash, Metricbeat, Filebeat, Heartbeat.
+Elasticsearch, Kibana, Logstash, Metricbeat, Filebeat, Heartbeat. The document also specifies the recommended RAM limits for each component.
 
 ---
 
 ## 1. Elasticsearch (JVM-based)
+
+**Recommended Heap:** 1 GB (adjustable based on system RAM, max 32 GB)
 
 ```bash
 mkdir -p /etc/systemd/system/elasticsearch.service.d
@@ -18,17 +20,20 @@ systemctl daemon-reexec
 systemctl restart elasticsearch
 systemctl show elasticsearch --property=MemoryMax
 ```
-### OR
-```bash
- vi /etc/elasticsearch/jvm.options
 
-# Configure accordingly avaliable ram.
+OR
+
+```bash
+vi /etc/elasticsearch/jvm.options
+
+# Configure accordingly available RAM
 -Xms8g
 -Xmx8g
 ```
 
-
 ## 2. Kibana (Node.js)
+
+**Recommended Heap:** 1 GB, System Memory Limit: 2 GB
 
 ```bash
 mkdir -p /etc/systemd/system/kibana.service.d
@@ -43,6 +48,8 @@ systemctl restart kibana
 
 ## 3. Logstash (JVM-based)
 
+**Recommended Heap:** 512 MB, System Memory Limit: 1 GB
+
 ```bash
 mkdir -p /etc/systemd/system/logstash.service.d
 cat << EOF > /etc/systemd/system/logstash.service.d/override.conf
@@ -55,6 +62,8 @@ systemctl restart logstash
 ```
 
 ## 4. Beats (Metricbeat, Filebeat, Heartbeat - Go binaries)
+
+**Memory Limit:** 512 MB each
 
 ```bash
 for beat in filebeat metricbeat heartbeat; do
@@ -86,3 +95,4 @@ ps -o pid,rss,vsz,cmd -p $(pgrep -f heartbeat)
 * Go-based Beats: Limit memory via `MemoryMax` in systemd.
 * Use drop-in override files to avoid editing main unit files.
 * Reload systemd with `systemctl daemon-reexec` after changes.
+* Adjust heap sizes according to available system RAM and production load.
