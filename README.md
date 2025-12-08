@@ -418,6 +418,18 @@ Add service token on `kibana node` (This will be deprecated on the latest versio
           - file
     pid.file: /run/kibana/kibana.pid
    ```
+    #### Kibana returns HTTP 500 and continuously shows the popup. fix
+    Generate a kibana xpack
+    ```bash
+    /usr/share/kibana/bin/kibana-encryption-keys generate
+    
+    # Add this generated xpack to the kibana.yml file
+    # =================== System: Elasticsearch (Optional) ===================
+    xpack.encryptedSavedObjects.encryptionKey: 0751067f09e94cafd8fc45bc28aaf253
+    xpack.reporting.encryptionKey: 5daddd8c8b002f97fb08f5a4932d7bb8
+    xpack.security.encryptionKey: 24edf7b01bb79fc176725ecfe2c04b9f
+    ```
+   
 2. **Start Kibana**:
    ```bash
    #   Troubleshooting : Start and check the logs.
